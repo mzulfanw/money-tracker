@@ -1,4 +1,5 @@
 import { IMoney } from '../interfaces/money.interfaces';
+import { Money } from '@prisma/client';
 
 export class MoneyServices {
   private _money: IMoney;
@@ -7,19 +8,27 @@ export class MoneyServices {
     this._money = money;
   }
 
-  getBalance(): number {
+  async getAmount(): Promise<Money[]> {
     return this._money.getAmount();
   }
 
-  addMoney(value: number): void {
-    this._money.addMoney(value);
+  async postAmount(value: number, spendType: string): Promise<void> {
+    await this._money.postAmount(value, spendType);
   }
 
-  spendMoney(value: number, reason: string): void {
-    this._money.spendMoney(value, reason);
+  async getAmountById(id: number): Promise<Money | null> {
+    return this._money.getAmountById(id);
   }
 
-  getListSpend(): string[] {
-    return this._money.getListSpend();
+  async updateAmount(
+    id: number,
+    value: number,
+    spendType: string
+  ): Promise<void> {
+    await this._money.updateAmount(id, value, spendType);
+  }
+
+  async deleteAmountById(id: number): Promise<void> {
+    await this._money.deleteAmountById(id);
   }
 }

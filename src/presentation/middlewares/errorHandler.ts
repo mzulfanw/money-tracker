@@ -8,8 +8,8 @@ export const errorHandler = (error: unknown, c: Context) => {
         success: false,
         message: 'Validation failed',
         errors: error.errors.map(err => ({
-          field: err.path[0], // Extracts field name
-          message: err.message, // Extracts Zod's message
+          field: err.path[0],
+          message: err.message,
         })),
       },
       400

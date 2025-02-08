@@ -1,31 +1,59 @@
 import { MoneyServices } from '../../application/services/money.services';
-import { Money } from '../../domain/money';
 import { Context } from 'hono';
 import { createResponse } from '../../shared/responseHelper';
+import { MoneyRepositories } from '../../infrastructure/repositories/money.repositories';
 
-const money = new Money(10000, 0);
-const moneyServices = new MoneyServices(money);
+const moneyRepositories = new MoneyRepositories();
+const moneyServices = new MoneyServices(moneyRepositories);
 
 export class MoneyControllers {
-  static async getBalance(c: Context) {
-    return c.json(createResponse(200, { balance: moneyServices.getBalance() }));
-  }
-
-  static addMoney(c: Context) {
-    const { amount } = c.req.valid('json' as never);
-    moneyServices.addMoney(amount);
-    return c.json(createResponse(201, { balance: moneyServices.getBalance() }));
-  }
-
-  static spendMoney(c: Context) {
-    const { amount, reason } = c.req.valid('json' as never);
-    moneyServices.spendMoney(amount, reason);
-    return c.json(createResponse(201, { balance: moneyServices.getBalance() }));
-  }
-
-  static listSpend(c: Context) {
+  static async getAmount(c: Context) {
     return c.json(
-      createResponse(200, { listSpend: moneyServices.getListSpend() })
+      createResponse(
+        200,
+        {
+          amount: await moneyServices.getAmount(),
+        },
+        'success'
+      )
     );
+  }
+
+  static async postAmount(c: Context) {
+    const { amount, spendType } = c.req.valid('json' as never);
+    await moneyServices.postAmount(amount, spendType);
+    return c.json(createResponse(201, {}, 'success'));
+  }
+
+  static async getAmountById(c: Context) {
+    const { id } = c.req.param();
+    return c.json(
+      createResponse(
+        200,
+        {
+          amount: await moneyServices.getAmountById(Number(id)),
+        },
+        'success'
+      )
+    );
+  }
+
+  static async updateAmount(c: Context) {
+    const { id } = c.req.param();
+    const { amount, spendType } = c.req.valid('json' as never);
+    await moneyServices.updateAmount(Number(id), amount, spendType);
+    return c.json(createResponse(200, {}, 'success'));
+  }
+
+  static async deleteAmountById(c: Context) {
+    const { id } = c.req.param();
+    const getAmount = await moneyServices.getAmountById(Number(id));
+
+    if (!getAmount) {
+      return c.json(createResponse(404, {}, 'data not found'));
+    }
+
+    await moneyServices.deleteAmountById(Number(id));
+    return c.json(createResponse(204, {}, 'success'));
   }
 }
