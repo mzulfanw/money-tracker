@@ -14,11 +14,23 @@ datasource db {
 }
 
 model Money {
-    id        Int   @id @default(autoincrement())
-    amount    Int
-    spendType String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  amount    Int
+  spendType String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@map("money")
+  @@map("money")
+}
+
+model Auth {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  password      String
+  createdAt     DateTime @default(now())
+  access_token  String?
+  refresh_token String?
+  updatedAt     DateTime @updatedAt
+
+  @@map("auth")
 }

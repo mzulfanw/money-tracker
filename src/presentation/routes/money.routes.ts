@@ -2,8 +2,11 @@ import { Hono } from 'hono';
 import { MoneyControllers } from '../controllers/money.controllers';
 import { schemaAmount } from '../../application/schema/money.schema';
 import { zValidator } from '../middlewares/validate';
+import { authorization } from '../middlewares/authorization';
 
 const moneyRoutes = new Hono();
+
+moneyRoutes.use(authorization);
 
 moneyRoutes.get('/amount', MoneyControllers.getAmount);
 moneyRoutes.post(
